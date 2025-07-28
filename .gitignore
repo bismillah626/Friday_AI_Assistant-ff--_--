@@ -1,0 +1,13 @@
+# Ignore virtual environment
+.venv/
+
+# Ignore dotenv file
+.env
+
+# Ignore system/IDE files
+__pycache__/
+*.pyc
+*.pyo
+*.log
+.DS_Store
+.vscode/
