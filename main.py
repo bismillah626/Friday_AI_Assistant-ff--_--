@@ -9,6 +9,7 @@ from transformers import pipeline
 from spotipy.oauth2 import SpotifyOAuth
 import pyjokes
 from dotenv import load_dotenv
+import json
 
 recogniser = sr.Recognizer()
 engine = pyttsx3.init()
@@ -144,27 +145,35 @@ def processCommand(command):
 
 if __name__ == "__main__":
     speak("Initializing the Friday AI Assistant...")
-while True:
-    # obtain audio from the microphone
-    r = sr.Recognizer()
-    
-    print("Recognizing....")    
+    mode = input("Enter mode 'v' for voice or 't' for text mode")
+    if mode == 't':
+        while True:
+            command = input("You: ").strip().lower()
+            if command:
+                processCommand(command)
+        #voice mode            
+    elif mode == 'v':
+        speak("Voice mode activated. Please say the wake word to start.")
+        while True:
+            # obtain audio from the microphone
+            r = sr.Recognizer()
+            print("Recognizing....")    
 
-    # recognize speech using google
-    try:
-        #listening for the wake word friday
-        with sr.Microphone() as source:
-            print("Listening....")
-            audio = r.listen(source, timeout=2, phrase_time_limit=1)
-            word = r.recognize_google(audio)
-            if(word.lower() == Wake_word.lower()):
-                speak("yeah i am here")
-        #listen for the command
-        with sr.Microphone() as source:
-            speak("Friday is active....")
-            audio = r.listen(source, timeout=5, phrase_time_limit=4)
-            command = r.recognize_google(audio)
-            processCommand(command)
-            
-    except Exception as e:
-        print("Error; {0}".format(e))
+            # recognize speech using google
+            try:
+                #listening for the wake word friday
+                with sr.Microphone() as source:
+                    print("Listening....")
+                    audio = r.listen(source, timeout=2, phrase_time_limit=1)
+                    word = r.recognize_google(audio)
+                    if(word.lower() == Wake_word.lower()):
+                        speak("yeah i am here")
+                #listen for the command
+                with sr.Microphone() as source:
+                    speak("Friday is active....")
+                    audio = r.listen(source, timeout=5, phrase_time_limit=4)
+                    command = r.recognize_google(audio)
+                    processCommand(command)
+                    
+            except Exception as e:
+                print("Error; {0}".format(e))
