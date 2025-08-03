@@ -84,6 +84,14 @@ def Genertae_Random_Jokes():
 # Function to search Wikipedia and speak the summary
 def search_wikipedia(query):
     pass
+# Function to find the path of an application
+import subprocess
+def find_app_path(app_name):
+    try:
+        result = subprocess.check_output(f'where {app_name}', shell=True, universal_newlines=True)
+        return result.strip().split('\n')[0]
+    except subprocess.CalledProcessError:
+        return None
 #A function for playing song on spotify
 def play_song_spotify(song_name ):
     try:
@@ -100,19 +108,29 @@ def play_song_spotify(song_name ):
  
 def processCommand(command):
     command = command.lower()
-
+#Now we can open any preinstalled app on desktop
     if "open" in command:
-     site = command.replace("open", "").strip().replace(" ", "")
-     url = f"https://www.{site}.com"
-    # Optionally, check if the site exists before opening
-     webbrowser.open(url)
-     speak(f"Opening {site}")
+        item = command.replace("open", "").strip().lower()
+        if os.path.exists(item):
+            os.startfile(item)
+            speak(f"Opening {item}")
+        else:
+            path = find_app_path(item)
+        if path:
+            os.startfile(path)
+            speak(f"Launching {item}")
+        else:
+            speak(f"I couldn’t find {item} on your system. Let me search it online.")
+            search_url = f"https://www.google.com/search?q=download+{item}"
+            webbrowser.open(search_url)
+
+
     elif "what's the weather" in command or "weather today" in command:
         get_weather()
     elif "tell me joke" in  command:
         Genertae_Random_Jokes()
-    elif "tell me about" in command:
-        topic = command.replace("tell me about", "").strip()
+    elif "tell me about" in command or "what is" in command:
+        topic = command.replace("tell me about", "").replace("what is", "").strip()
         try:
             summary = wikipedia.summary(topic, sentences=2, auto_suggest=False)
             speak(summary)
@@ -130,8 +148,7 @@ def processCommand(command):
             speak("Paused the music.")
         except Exception as e:
             speak("I couldn't pause it because no device is playing.")
-            print(f"[Spotify Pause Error] {e}")
-   
+            print(f"[Spotify Pause Error] {e}")      
     elif "nice work friday" in command:
         speak("Thank u boss")
     elif "stop" in command or "exit" in command:
