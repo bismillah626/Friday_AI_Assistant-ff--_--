@@ -10,6 +10,8 @@ from spotipy.oauth2 import SpotifyOAuth
 import pyjokes
 from dotenv import load_dotenv
 import json
+import google.generativeai as genai
+import re
 
 recogniser = sr.Recognizer()
 engine = pyttsx3.init()
@@ -31,7 +33,40 @@ Wake_word ="Friday"
 chatbot = pipeline("text-generation", model="microsoft/DialoGPT-medium")
 
 load_dotenv() 
+# ---Implementing gemini API keys on friday---
+genai.configure(api_key=os.getenv("GEMINI_API_KEYS"))
 
+# --> function to ask gemini as a genie who will obey your orders
+def ask_gemini(prompt, mode="flash"):
+    try:
+        model_name = "gemini-2.5-flash" if mode == "flash" else "gemini-2.5-pro"
+        model = genai.GenerativeModel(model_name)
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"Error communicating with Gemini: {e}"
+def friday_brain(user_input):
+    user_input_lower = user_input.lower()
+    #redirecting to use pro if codeing related problem is asked
+    if re.search(r'\b(code|programming|python|javascript|java|c\+\+|c#|debug|function|class|algorithm|dsa|program|codeforces|codechef|leetcode)\b', user_input_lower):
+        return ask_gemini(user_input, mode="pro")
+    else:
+        return ask_gemini(user_input, mode="flash")
+#implementing gemini so that it can print code in terminal
+    
+def process_user_input(user_input):
+    response = friday_brain(user_input)
+    
+    # If response contains code block, print it cleanly
+    if "```" in response:
+        code_content = re.findall(r"```(?:\w*\n)?(.*?)```", response, re.DOTALL)
+        if code_content:
+            print("\nGenerated Code:\n")
+            print(code_content[0])
+        else:
+            print(response)
+    else:
+        print(response)
 # === Spotify Client Setup ===
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=os.getenv("SPOTIPY_CLIENT_ID"),
@@ -76,11 +111,7 @@ def get_weather():
         speak("Sorry, I couldn't fetch the weather.")
         print(f"[Weather Exception] {e}")
 
-#Joke generating function 
-def Genertae_Random_Jokes():
-    speak("Generating a random joke for you...")
-    joke = pyjokes.get_joke()
-    speak(joke)
+
 # Function to search Wikipedia and speak the summary
 def search_wikipedia(query):
     pass
@@ -124,21 +155,10 @@ def processCommand(command):
             search_url = f"https://www.google.com/search?q=download+{item}"
             webbrowser.open(search_url)
 
-
+#COMMANDS BEGIN HERE
     elif "what's the weather" in command or "weather today" in command:
         get_weather()
-    elif "tell me joke" in  command:
-        Genertae_Random_Jokes()
-    elif "tell me about" in command or "what is" in command:
-        topic = command.replace("tell me about", "").replace("what is", "").strip()
-        try:
-            summary = wikipedia.summary(topic, sentences=2, auto_suggest=False)
-            speak(summary)
-        except Exception as e:
-            print(f"[Wikipedia Error] {e}")
-            prompt = f"Tell me about {topic}"
-            response = chatbot(prompt, max_length=100, do_sample=True, truncation=True)
-            speak(response[0]['generated_text'])
+
     elif "play" in command:
         song = command.replace("play", "").strip()    
         play_song_spotify(song)
@@ -155,17 +175,34 @@ def processCommand(command):
         speak("Goodbye!")
         exit()
     else:
-        response = chatbot(command, max_length=100, do_sample=True, truncation=True)
-        reply = response[0]['generated_text']
-        speak(reply)
+        reply = None
+        try:
+        # Try Gemini first
+            reply = friday_brain(command)  # Uses Gemini API
+            print(f" {reply}")
+            if not reply or reply.strip() == "":
+                raise Exception("Empty Gemini response")
+
+        except Exception as e:
+            print(f"[ Error] {e}, falling back to DialoGPT...")
+            # Fall back to DialoGPT if Gemini fails
+            try:
+                response = chatbot(command, max_length=100, do_sample=True, truncation=True)
+                reply = response[0]['generated_text']
+            except Exception as e2:
+                print(f"[DialoGPT Error] {e2}")
+                reply = "Sorry, I couldn't process your request right now."
+
+    speak(reply)
+    #print(reply)
 
 
 if __name__ == "__main__":
     speak("Initializing the Friday AI Assistant...")
-    mode = input("Enter mode 'v' for voice or 't' for text mode")
+    mode = input("Enter mode 'v' for voice or 't' for text mode :\n")
     if mode == 't':
         while True:
-            command = input("You: ").strip().lower()
+            command = input("Commands: ").strip().lower()
             if command:
                 processCommand(command)
         #voice mode            
