@@ -42,9 +42,22 @@ def ask_gemini(prompt, mode="flash"):
         model_name = "gemini-2.5-flash" if mode == "flash" else "gemini-2.5-pro"
         model = genai.GenerativeModel(model_name)
         response = model.generate_content(prompt)
-        return response.text
+
+        # Extract text safely
+        if hasattr(response, "candidates") and response.candidates:
+            parts = []
+            for cand in response.candidates:
+                if hasattr(cand, "content") and hasattr(cand.content, "parts"):
+                    for part in cand.content.parts:
+                        if hasattr(part, "text"):
+                            parts.append(part.text)
+            return "\n".join(parts).strip() if parts else "No text returned by Gemini."
+        
+        return "No candidates returned by Gemini."
+
     except Exception as e:
         return f"Error communicating with Gemini: {e}"
+
 def friday_brain(user_input):
     user_input_lower = user_input.lower()
     #redirecting to use pro if codeing related problem is asked
