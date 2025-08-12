@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 import json
 import google.generativeai as genai
 import re
+from colorama import init, Fore, Style
 
 recogniser = sr.Recognizer()
 engine = pyttsx3.init()
@@ -57,6 +58,10 @@ def ask_gemini(prompt, mode="flash"):
 
     except Exception as e:
         return f"Error communicating with Gemini: {e}"
+    
+# Initialize colorama for Windows too
+init(autoreset=True)
+
 
 def friday_brain(user_input):
     user_input_lower = user_input.lower()
@@ -69,17 +74,26 @@ def friday_brain(user_input):
     
 def process_user_input(user_input):
     response = friday_brain(user_input)
-    
-    # If response contains code block, print it cleanly
-    if "```" in response:
-        code_content = re.findall(r"```(?:\w*\n)?(.*?)```", response, re.DOTALL)
-        if code_content:
-            print("\nGenerated Code:\n")
-            print(code_content[0])
-        else:
-            print(response)
-    else:
-        print(response)
+
+    if not response:
+        print(Fore.RED + "⚠️ No response from Gemini.")
+        return
+
+    # Split into text/code blocks
+    parts = re.split(r"```(?:\w*\n)?(.*?)```", response, flags=re.DOTALL)
+
+    for i, part in enumerate(parts):
+        part = part.strip()
+        if not part:
+            continue
+
+        if i % 2 == 1:  # Code block
+            print(Fore.CYAN + "\n💻 Generated Code:\n" + Style.RESET_ALL)
+            print(Fore.GREEN + part + Style.RESET_ALL)
+        else:  # Text block
+            print(Fore.YELLOW + "\n📝 Response:\n" + Style.RESET_ALL)
+            print(Fore.WHITE + part + Style.RESET_ALL)
+            
 # === Spotify Client Setup ===
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=os.getenv("SPOTIPY_CLIENT_ID"),
