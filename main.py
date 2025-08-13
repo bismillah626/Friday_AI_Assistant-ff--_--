@@ -151,53 +151,73 @@ def find_app_path(app_name):
     except subprocess.CalledProcessError:
         return None
 #A function for playing song on spotify
-def play_song_spotify(song_name ):
+def play_song_spotify(song_name):
     try:
-        results = sp.search(q=song_name, limit=1, type='track')
+        # Force Spotify to treat the search as a track search
+        query = f'track:"{song_name}"'
+        results = sp.search(q=query, limit=5, type='track')
+
         if results['tracks']['items']:
-            uri = results['tracks']['items'][0]['uri']
+            # Find the best match by checking name similarity
+            from difflib import SequenceMatcher
+
+            best_match = max(
+                results['tracks']['items'],
+                key=lambda track: SequenceMatcher(None, song_name.lower(), track['name'].lower()).ratio()
+            )
+
+            uri = best_match['uri']
             sp.start_playback(uris=[uri])
-            speak(f"Playing {song_name} on Spotify.")
+            speak(f"Playing {best_match['name']} by {best_match['artists'][0]['name']} on Spotify.")
         else:
             speak("Couldn't find the song on Spotify.")
     except Exception as e:
         speak("There was a problem connecting to Spotify.")
         print(f"[Spotify Error] {e}")
+
  
 def processCommand(command):
     command = command.lower()
+    reply = None
 #Now we can open any preinstalled app on desktop
     if "open" in command:
         item = command.replace("open", "").strip().lower()
         if os.path.exists(item):
             os.startfile(item)
             speak(f"Opening {item}")
+            return
         else:
             path = find_app_path(item)
         if path:
             os.startfile(path)
             speak(f"Launching {item}")
+            return 
         else:
             speak(f"I couldn’t find {item} on your system. Let me search it online.")
             search_url = f"https://www.google.com/search?q=download+{item}"
             webbrowser.open(search_url)
+            return 
 
 #COMMANDS BEGIN HERE
     elif "what's the weather" in command or "weather today" in command:
         get_weather()
+        return 
 
     elif "play" in command:
         song = command.replace("play", "").strip()    
         play_song_spotify(song)
+        return
     elif "pause" in command:
         try:
             sp.pause_playback()
             speak("Paused the music.")
         except Exception as e:
             speak("I couldn't pause it because no device is playing.")
-            print(f"[Spotify Pause Error] {e}")      
+            print(f"[Spotify Pause Error] {e}")  
+            return     
     elif "nice work friday" in command:
         speak("Thank u boss")
+        return
     elif "stop" in command or "exit" in command:
         speak("Goodbye!")
         exit()
