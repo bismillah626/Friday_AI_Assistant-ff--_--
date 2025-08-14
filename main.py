@@ -14,6 +14,11 @@ import google.generativeai as genai
 import re
 from colorama import init, Fore, Style
 
+#Setting the mode to switch between voice and text
+
+mode = "voice"
+
+
 recogniser = sr.Recognizer()
 engine = pyttsx3.init()
 # Get available voices
@@ -26,8 +31,9 @@ for index, voice in enumerate(voices):
 # Set the voice to female (usually index 1 on Windows)
 engine.setProperty('voice', voices[1].id)  
 def speak(text):
-    engine.say (text)
-    engine.runAndWait()
+    if(mode == "voice"):
+        engine.say (text)
+        engine.runAndWait()
 #Setting the wake_word
 Wake_word ="Friday"
 #Seting Chatbot for generating falback Response
@@ -177,7 +183,17 @@ def play_song_spotify(song_name):
 
  
 def processCommand(command):
+    global mode
     command = command.lower()
+     # Mode switching
+    if "switch to text mode" in command:
+        mode = "text"
+        speak("Switching to text mode. I will no longer speak out loud.")
+        return
+    elif "switch to voice mode" in command:
+        mode = "voice"
+        speak("Switching to voice mode. I will now speak responses.")
+        return
     reply = None
 #Now we can open any preinstalled app on desktop
     if "open" in command:
