@@ -189,11 +189,11 @@ def processCommand(command):
     if "switch to text mode" in command:
         mode = "text"
         speak("Switching to text mode. I will no longer speak out loud.")
-        return
+        return "TEXT_MODE"
     elif "switch to voice mode" in command:
         mode = "voice"
         speak("Switching to voice mode. I will now speak responses.")
-        return
+        return "VOICE_MODE"
     reply = None
 #Now we can open any preinstalled app on desktop
     if "open" in command:
@@ -262,35 +262,60 @@ def processCommand(command):
 
 if __name__ == "__main__":
     speak("Initializing the Friday AI Assistant...")
-    mode = input("Enter mode 'v' for voice or 't' for text mode :\n")
-    if mode == 't':
-        while True:
+    Wake_word = "Friday"
+    recognizer = sr.Recognizer()
+    command = ""
+    mode = input("Enter mode 'v' for voice or 't' for text mode :\n").strip().lower()
+    
+    while True:
+         # TEXT MODE
+        if mode == 't':  # TEXT MODE
             command = input("Commands: ").strip().lower()
             if command:
-                processCommand(command)
-        #voice mode            
-    elif mode == 'v':
-        speak("Voice mode activated. Please say the wake word to start.")
-        while True:
-            # obtain audio from the microphone
-            r = sr.Recognizer()
-            print("Recognizing....")    
-
-            # recognize speech using google
+                mode_signal=processCommand(command)
+            if mode_signal == "VOICE_MODE":
+                mode = 'v'
+                speak("Switched to voice mode.")
+        # VOICE MODE
+        elif mode == 'v':
             try:
-                #listening for the wake word friday
                 with sr.Microphone() as source:
-                    print("Listening....")
-                    audio = r.listen(source, timeout=2, phrase_time_limit=1)
-                    word = r.recognize_google(audio)
-                    if(word.lower() == Wake_word.lower()):
-                        speak("yeah i am here")
-                #listen for the command
-                with sr.Microphone() as source:
-                    speak("Friday is active....")
-                    audio = r.listen(source, timeout=5, phrase_time_limit=4)
-                    command = r.recognize_google(audio)
-                    processCommand(command)
+                    # Adjust for ambient noise once to improve recognition
+                    recognizer.adjust_for_ambient_noise(source, duration=0.5)
+                    print("\nListening for wake word 'Friday'...")
                     
+                    # 1. Listen for the wake word
+                    audio = recognizer.listen(source, timeout=5, phrase_time_limit=2)
+                    heard_text = recognizer.recognize_google(audio).lower()
+
+                    # 2. If wake word is detected, proceed to listen for the command
+                    if Wake_word.lower() in heard_text:
+                        speak("Yes?")
+                        print("Wake word detected. Listening for command...")
+                        
+                        # 3. Listen for the actyal command
+                        audio_command = recognizer.listen(source, timeout=5, phrase_time_limit=5)
+                        command = recognizer.recognize_google(audio_command).lower()
+                        print(f"You: {command}")
+
+                        # 4. process the comand EXACTLY ONCE
+                        # This is the single, correct place to process a voice command
+                        mode_signal = processCommand(command)
+                        
+                        # 5. Check if the commsnd was to switch modes
+                        if mode_signal == "TEXT_MODE":
+                            mode = 't'
+                            speak("Switched to text mode.")
+
+            except sr.WaitTimeoutError:
+                # This is not an error. It just means the user didn't speak
+                # 'pass' tells the loop to simply continue and listen again
+                pass
+            except sr.UnknownValueError:
+                # This means speech was heard but couldn't be understood
+                # Also not a critical error, so we just listen again
+                pass
             except Exception as e:
-                print("Error; {0}".format(e))
+                # For any other unexpected errors, print it and continue
+                print(f"[ERROR in voice loop]: {e}")
+
