@@ -1,6 +1,5 @@
 from langchain.agents import initialize_agent, AgentType
 from langchain.memory import ConversationBufferMemory
-from core.llm_engine import get_gemini_llm
 from tools.custom_tools import all_tools
 
 #---Defining Friday Agents personality---#
@@ -29,9 +28,9 @@ Thought: I now know the final answer.
 Final Answer: The final answer to the original input question.
 """
 
-def create_friday_agent(chat_history_memory:ConversationBufferMemory):
+def create_friday_agent(llm,chat_history_memory:ConversationBufferMemory):
     """Creates and returns the Friday AI agent."""
-    llm = get_gemini_llm()
+    
     friday_agent = initialize_agent(
         tools=all_tools,
         llm=llm,
