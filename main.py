@@ -101,12 +101,17 @@ def process_user_input(user_input):
             print(Fore.WHITE + part + Style.RESET_ALL)
             
 # === Spotify Client Setup ===
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-    client_id=os.getenv("SPOTIPY_CLIENT_ID"),
-    client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
-    redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
-    scope="user-read-playback-state user-modify-playback-state user-read-currently-playing"
-))
+
+try:
+    sp = spotipy.Spotify(auth_manager=spotipy.oauth2.SpotifyOAuth(
+        client_id=os.getenv("SPOTIPY_CLIENT_ID"),
+        client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
+        redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
+        scope="user-read-playback-state user-modify-playback-state"
+    ))
+except Exception as e:
+    print(f"Spotify connection failed: {e}")
+    sp = None
 # Ensure the Spotify client is authenticated
 # === Get Location Dynamically ===
 def get_location_by_ip():
@@ -120,7 +125,8 @@ def get_location_by_ip():
         print(f"[Location Error] {e}")
         return 28.61, 77.20  # fallback to Delhi
 #Defining the weather function
-def get_weather():
+def get_weather(location: str = "auto")-> str:
+    """Useful for when you need to get the current weather. The location is inferred automatically if not provided."""
     try:
         lat, lon = get_location_by_ip()
         url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
@@ -136,18 +142,14 @@ def get_weather():
             temp = data["current_weather"].get("temperature")
             wind = data["current_weather"].get("windspeed")
             speak(f"Current temperature is {temp} degrees Celsius with a wind speed of {wind} km/h.")
-        else:
-            speak("Couldn't retrieve current weather data.")
-            print("[Weather Error] Unexpected JSON format:", data)
+        
 
     except Exception as e:
         speak("Sorry, I couldn't fetch the weather.")
         print(f"[Weather Exception] {e}")
 
 
-# Function to search Wikipedia and speak the summary
-def search_wikipedia(query):
-    pass
+
 # Function to find the path of an application
 import subprocess
 def find_app_path(app_name):
@@ -180,6 +182,16 @@ def play_song_spotify(song_name):
     except Exception as e:
         speak("There was a problem connecting to Spotify.")
         print(f"[Spotify Error] {e}")
+
+def pause_spotify(query: str = "") -> str:
+    """Useful for pausing the current music on Spotify."""
+    if not sp:
+        return "Spotify is not connected."
+    try:
+        sp.pause_playback()
+        return "Music paused on Spotify."
+    except Exception as e:
+        return f"Could not pause Spotify. Maybe nothing is playing? Error: {e}"
 
  
 def processCommand(command):
