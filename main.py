@@ -14,7 +14,7 @@ engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id) # Set a female voice
 
-# ✅ Make sure these functions are defined at the top level (no indentation)
+
 def speak(text: str):
     """Converts text to speech."""
     print(f"Friday: {text}")

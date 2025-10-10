@@ -41,7 +41,7 @@ def create_friday_agent(llm,chat_history_memory:ConversationBufferMemory):
             "prefix": AGENTP_PREFIX,
             "format_instructions": AGENT_FORMAT_INSTRUCTIONS
         },
-        handle_parsing_errors=True # Gracefully handle any LLM output errors
+        handle_parsing_errors=True # handle any LLM output errors
     )
     return friday_agent
     
