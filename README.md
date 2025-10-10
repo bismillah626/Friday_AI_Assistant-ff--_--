@@ -1,45 +1,69 @@
 Friday AI Assistant
-A modular and intelligent voice assistant powered by Python, LangChain, and Google's Gemini Pro. "Friday" evolves from a simple command-based script into a conversational agent capable of using tools to interact with real-world APIs.
 
-About The Project
-This project began as a simple Python script for a voice assistant that could handle a few hard-coded commands. It has been refactored into a sophisticated AI agent using the LangChain framework.
+**Overview**
+ Friday AI– Intelligent Voice Assistant Built an advanced, modular LLM-driven voice assistant designed for
+ natural, emotionally aware interaction and contextual reasoning. Utilized LangChain as the core framework
+ to integrate multiple modules — enabling conversational chains, task orchestration, and dynamic API routing.
+ Implemented multi-layered memory systems including short-term (ConversationBufferMemory) and long-term
+ recall using ChromaDB/Pinecone vector databases, enhancing continuity across sessions.
+ Integrated Hugging Face Transformers and Gemini API keys for natural language understanding, sentiment
+ analysis, summarization, and emotion-aware text generation. Used SentenceTransformers for vector embed
+dings to represent and retrieve conversational history semantically. Applied LangChain Prompt Templates for
+ adaptive personality-driven interactions (e.g., friendly, professional, or technical tones)
 
-Instead of relying on if/elif statements, Friday now uses a Large Language Model (Google's Gemini Pro) as its reasoning engine. The LLM decides which "tool" (like getting the weather or playing a song) is best suited to fulfill a user's request, making the assistant far more flexible, conversational, and easy to extend.
 
-Features
-Voice-Activated: Listens for the wake word "Friday" before accepting commands.
 
-Conversational Memory: Remembers the context of the current conversation to answer follow-up questions.
+**Tech_Stack**
 
-Tool-Based Architecture: Uses a set of tools to perform actions:
+| Category | Technology |
+|-----------|-------------|
+| **Core Language** | Python |
+| **AI Framework** | LangChain |
+| **LLM Provider** | Hugging Face (Transformers) |
+| **Vector Database** | FAISS / ChromaDB |
+| **Voice Recognition** | SpeechRecognition |
+| **Text-to-Speech (TTS)** | pyttsx3 |
+| **APIs & Integrations** | Spotify API, Open-Meteo Weather API, Wikipedia API |
+| **Environment Management** | python-dotenv |
+| **Memory Handling** | LangChain Memory + Vector DB |
 
-🎵 Spotify Control: Play songs and pause music.
+---
 
-🌦️ Real-time Weather: Fetches the current weather for your location.
+ **Features
+**
+ **Voice Activation** – Responds when the wake word **“Friday”** is detected.  
+ **Conversational Memory** – Maintains context using vector embeddings for meaningful follow-ups.  
+ **Tool-Based Architecture** – Uses modular tools (Spotify, Weather, Wikipedia, etc.) registered with LangChain.  
+ **Music Control** – Play, pause, or resume tracks using the **Spotify API**.  
+ **Weather Assistant** – Fetches real-time weather data using the **Open-Meteo API**.  
+ **Knowledge Search** – Retrieves concise answers from **Wikipedia** using LangChain’s retriever tools.  
+ **Joke Generator** – Tells random programming jokes for casual interactions.  
+ **Extensible** – Add your own tools or connect more APIs without changing the core logic.  
 
-🧠 Wikipedia Search: Answers general knowledge questions.
+---
 
-😄 Joke Generator: Tells a random programming joke.
+##  Project Architecture
 
-Extensible: Easily add new tools or a personalized knowledge base.
+Friday_AI_Assistant/
+│
+├── core/
+│ ├── agent_manager.py # LangChain agent logic and reasoning
+│ ├── memory_manager.py # Vector DB + conversational memory
+│ ├── voice_engine.py # SpeechRecognition + pyttsx3
+│ └── tool_registry.py # Tool setup and registration
+│
+├── tools/
+│ ├── spotify_tool.py
+│ ├── weather_tool.py
+│ ├── wiki_tool.py
+│ └── joke_tool.py
+│
+├── embeddings/
+│ ├── vector_store.faiss
+│ └── documents/ # Stored user or knowledge base data
+│
+├── main.py # Entry point
+├── requirements.txt
+├── .env.example
+└── README.md
 
-Powered by Gemini: Uses Google's gemini-pro model for advanced reasoning and natural language understanding.
-
-Tech Stack
-Core: Python
-
-AI Framework: LangChain
-
-LLM: Google Gemini Pro
-
-Voice Recognition: SpeechRecognition
-
-Text-to-Speech: pyttsx3
-
-APIs & Services:
-
-Spotify API (via spotipy)
-
-Open-Meteo Weather API
-
-Wikipedia API
