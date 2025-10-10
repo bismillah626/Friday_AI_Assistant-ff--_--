@@ -1,6 +1,6 @@
 Friday AI Assistant
 
-**Overview**
+##Overview
  Friday AI– Intelligent Voice Assistant Built an advanced, modular LLM-driven voice assistant designed for
  natural, emotionally aware interaction and contextual reasoning. Utilized LangChain as the core framework
  to integrate multiple modules — enabling conversational chains, task orchestration, and dynamic API routing.
@@ -13,7 +13,7 @@ dings to represent and retrieve conversational history semantically. Applied Lan
 
 
 
-**Tech_Stack**
+##Tech_Stack
 
 | Category | Technology |
 |-----------|-------------|
@@ -29,8 +29,8 @@ dings to represent and retrieve conversational history semantically. Applied Lan
 
 ---
 
- **Features
-**
+ ##Features
+
  **Voice Activation** – Responds when the wake word **“Friday”** is detected.  
  **Conversational Memory** – Maintains context using vector embeddings for meaningful follow-ups.  
  **Tool-Based Architecture** – Uses modular tools (Spotify, Weather, Wikipedia, etc.) registered with LangChain.  
