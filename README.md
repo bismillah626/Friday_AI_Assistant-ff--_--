@@ -1,4 +1,4 @@
-Friday AI Assistant
+# Friday AI Assistant
 
 ## Overview
  Friday AI– Intelligent Voice Assistant Built an advanced, modular LLM-driven voice assistant designed for
@@ -44,26 +44,26 @@ dings to represent and retrieve conversational history semantically. Applied Lan
 
 ##  Project Architecture
 
-Friday_AI_Assistant/
-│
-├── core/
-│ ├── agent_manager.py # LangChain agent logic and reasoning
-│ ├── memory_manager.py # Vector DB + conversational memory
-│ ├── voice_engine.py # SpeechRecognition + pyttsx3
-│ └── tool_registry.py # Tool setup and registration
-│
-├── tools/
-│ ├── spotify_tool.py
-│ ├── weather_tool.py
-│ ├── wiki_tool.py
-│ └── joke_tool.py
-│
-├── embeddings/
-│ ├── vector_store.faiss
-│ └── documents/ # Stored user or knowledge base data
-│
-├── main.py # Entry point
-├── requirements.txt
-├── .env.example
-└── README.md
+Friday_AI_Assistant/<br>
+│<br>
+├── core/<br>
+│ ├── agent_manager.py # LangChain agent logic and reasoning<br>
+│ ├── memory_manager.py # Vector DB + conversational memory<br>
+│ ├── voice_engine.py # SpeechRecognition + pyttsx3<br>
+│ └── tool_registry.py # Tool setup and registration<br>
+│<br>
+├── tools/<br>
+│ ├── spotify_tool.py<br>
+│ ├── weather_tool.py<br>
+│ ├── wiki_tool.py<br>
+│ └── joke_tool.py<br>
+│<br>
+├── embeddings/<br>
+│ ├── vector_store.faiss<br>
+│ └── documents/ # Stored user or knowledge base data<br>
+│<br>
+├── main.py # Entry point<br>
+├── requirements.txt<br>
+├── .env.example<br>
+└── README.md<br>
 
