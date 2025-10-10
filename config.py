@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 #API keys 
-GEMINI_API_KEYS = os.getenv("GEMINI_API_KEYS")
+GOOGLE_API_KEYS = os.getenv("GEMINI_API_KEYS")
 HUGGINGFACE_API_KEYS = os.getenv("HUGGINGFACE_API_KEYS")  
   
 #spotify client setup
