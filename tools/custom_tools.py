@@ -1,5 +1,6 @@
 import webbrowser
 import requests
+import os
 import pyjokes
 import wikipedia
 import spotipy
@@ -52,13 +53,26 @@ def get_weather(location: str = "auto")-> str:
         return f"Current temperature in {loc_data['name']} is {temp}°C with a wind speed of {wind} km/h."
     except Exception as e:
         return f"Sorry, I couldn't fetch the weather. Error: {e}"
-    # Function to find the path of an application
+# Function to find the path of an application
 def find_app_path(app_name):
     try:
         result = subprocess.check_output(f'where {app_name}', shell=True, universal_newlines=True)
         return result.strip().split('\n')[0]
     except subprocess.CalledProcessError:
         return None
+#Find app using the path genetrtaed from the above function
+def open_app(item):
+   item = item.strip().lower()
+   if os.path.exists(item):
+       os.startfile(item)
+       return f"Opening {item}..."
+   else:
+       path = find_app_path(item)
+       if path:
+           os.startfile(path)
+           return f"Opening {item} from {path}..."
+       else:
+           return f"Could not find the application: {item}"
 #A function for playing song on spotify
 def play_song_spotify(song_name):
     try:
@@ -124,10 +138,16 @@ app_finder_tool = Tool(
     func = find_app_path,
     description="Useful for finding the installation path of an application on Windows. Input should be the name of the application executable, e.g., 'notepad.exe'."
 )
+app_opening_tool =Tool(
+    name = "AppOpener",
+    func = open_app,
+    description="Useful for opening an application on Windows. Input should be the name of the application executable, e.g., 'notepad.exe'."
+)
 #LIST of all tools that the agent can use
 all_tools = [
     weather_tool,
     app_finder_tool,
+    app_opening_tool,
     spotify_play_tool,
     spotify_pause_tool, 
     website_open_tool,  

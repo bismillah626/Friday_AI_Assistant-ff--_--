@@ -10,11 +10,21 @@ from langchain.chains import LLMChain
 WAKE_WORD = "friday"
 
 # --- Initialize Speech Engine ---
+from agents.friday_agent import create_friday_agent
+from memory.memory_manager import MemoryManager
+from core.llm_engine import get_flash_llm, get_pro_llm 
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+
+# --- Wake Word and Other Constants ---
+WAKE_WORD = "friday"
+
+# --- Initialize Speech Engine ---
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id) # Set a female voice
 
-# ✅ Make sure these functions are defined at the top level (no indentation)
+
 def speak(text: str):
     """Converts text to speech."""
     print(f"Friday: {text}")

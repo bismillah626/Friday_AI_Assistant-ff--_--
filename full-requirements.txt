@@ -62,3 +62,17 @@ urllib3==2.5.0
 virtualenv==20.31.2
 wikipedia==1.4.0
 yarl==1.20.1
+langchain
+langchain-google-genai
+langchain-community
+speechrecognition
+pyttsx3
+spotipy
+python-dotenv
+pyjokes
+wikipedia
+requests
+transformers
+sentence-transformers
+chromadb
+pyaudio 
